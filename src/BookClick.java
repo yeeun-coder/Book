@@ -1,0 +1,671 @@
+
+import dbConnect.DB;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ */
+
+/**
+ *
+ * @author pcfriend
+ */
+public class BookClick extends javax.swing.JFrame {
+    
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(BookClick.class.getName());
+    private int bookid;
+    
+    // 별점 관리
+    private List<JLabel> starLabels = new ArrayList<>();
+
+    // 별 이미지
+    private ImageIcon fullStarIcon = new ImageIcon(getClass().getResource("/images/star_filled.png"));
+    private ImageIcon emptyStarIcon = new ImageIcon(getClass().getResource("/images/star.png"));
+
+    // 현재 선택된 별점
+    private int currentRating = 0;
+    
+
+    public BookClick() {
+        initComponents();
+        status_Slider.setUI(new CustomSlider(status_Slider));
+        status_Slider.setOpaque(false);
+        txtReadStart.setBorder(new RoundedBorder(10));
+        txtReadEnd.setBorder(new RoundedBorder(10));
+        txtReview.setBorder(new RoundedBorder(10));
+        txtReviews.setBorder(new RoundedBorder(10));
+        initStarSystem();
+    }
+    
+    public BookClick(int bookid) {
+        this();
+        this.bookid = bookid;
+        
+        String memory_id = null;
+        try {
+            String SQL = "select * from book_memories bm join books bs on bm.book_id = bs.book_id where bm.book_id = '";
+            SQL += bookid + "'";
+            DB db = new DB();
+            db.dbOpen();
+            db.dbRs = db.dbStmt.executeQuery(SQL);
+            if(db.dbRs.next()){
+                lblBookTitle.setText(db.dbRs.getString("title"));
+                lblAuthor.setText(db.dbRs.getString("author"));
+                lblType.setText(db.dbRs.getString("type"));
+                int status = null == db.dbRs.getString("reading_status") ? 0 : Integer.parseInt(db.dbRs.getString("reading_status"));
+                status_Slider.setValue(status);
+                
+                txtReview.setText(db.dbRs.getString("one_line_review"));
+                txtReadStart.setText(db.dbRs.getString("start_date"));
+                txtReadEnd.setText(db.dbRs.getString("end_date"));
+                
+                int star = Integer.parseInt(db.dbRs.getString("rating"));
+                setRating(star);
+                
+                memory_id = db.dbRs.getString("memory_id");   
+            }
+            db.dbRs.close();
+            db.dbClose();
+        } catch (Exception e) {
+            System.out.println("SQLException : " + e.getMessage());
+        }
+        
+        DefaultListModel<String> listModel = new DefaultListModel<>();
+        try {
+            
+            String SQL = "select * from book_quotes where memory_id = '";
+            SQL += memory_id + "'";
+            DB db = new DB();
+            db.dbOpen();
+            db.dbRs = db.dbStmt.executeQuery(SQL);
+            
+            while (db.dbRs.next()) {
+                
+                String quoteText = null;
+                String page = db.dbRs.getString("page_number");
+                if (page != null) quoteText = " (p." + page + ") ";
+                quoteText += db.dbRs.getString("sentence_text");
+                 
+                listModel.addElement(quoteText);
+            }
+            db.dbRs.close();
+            db.dbClose();
+        } catch (Exception e) {
+            System.out.println("SQLException : " + e.getMessage());
+        }
+        
+        jList1.setModel(listModel);
+    }
+    private void initStarSystem() {
+    starLabels.add(lblStar1);
+    starLabels.add(lblStar2);
+    starLabels.add(lblStar3);
+    starLabels.add(lblStar4);
+    starLabels.add(lblStar5);
+
+    // 클릭 이벤트 연결
+    for (int i = 0; i < starLabels.size(); i++) {
+        int score = i + 1; 
+        JLabel label = starLabels.get(i);
+
+        // 마우스 클릭 리스너 추가
+        label.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                setRating(score); 
+            }
+        });
+        
+        // 마우스 올렸을 때 손가락 모양으로 변경
+        label.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        }
+    }
+    
+   private void setRating(int score) {
+       this.currentRating = score; 
+       System.out.println("현재 별점: " + currentRating);
+       
+       // 별 상태
+       for (int i = 0; i < starLabels.size(); i++) {
+           if (i < score) {
+               starLabels.get(i).setIcon(fullStarIcon);
+           } else {
+               starLabels.get(i).setIcon(emptyStarIcon);
+           }
+       }
+   }
+    
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jDialog1 = new javax.swing.JDialog();
+        lblAlert = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        lblBookTitle = new javax.swing.JLabel();
+        lblAuthor = new javax.swing.JLabel();
+        lblStatus = new javax.swing.JLabel();
+        status_Slider = new javax.swing.JSlider();
+        lblReadDate = new javax.swing.JLabel();
+        lblReview = new javax.swing.JLabel();
+        lblStar = new javax.swing.JLabel();
+        lblStatus5 = new javax.swing.JLabel();
+        lblStatus6 = new javax.swing.JLabel();
+        lblStatus7 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        txtReadStart = new javax.swing.JTextField();
+        txtReadEnd = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        txtReviews = new javax.swing.JTextField();
+        lblStar1 = new javax.swing.JLabel();
+        lblStar2 = new javax.swing.JLabel();
+        lblStar3 = new javax.swing.JLabel();
+        lblStar4 = new javax.swing.JLabel();
+        lblStar5 = new javax.swing.JLabel();
+        btnSave = new javax.swing.JButton();
+        lblType = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList<>();
+        btnMakeReview = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        txtPage = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
+        lblReview1 = new javax.swing.JLabel();
+        txtReview = new javax.swing.JTextField();
+        btnDeleteReview = new javax.swing.JButton();
+
+        jDialog1.setTitle("경고");
+        jDialog1.setModal(true);
+        jDialog1.setSize(new java.awt.Dimension(400, 100));
+
+        lblAlert.setText("lblAlert");
+
+        javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
+        jDialog1.getContentPane().setLayout(jDialog1Layout);
+        jDialog1Layout.setHorizontalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblAlert)
+                .addContainerGap(356, Short.MAX_VALUE))
+        );
+        jDialog1Layout.setVerticalGroup(
+            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jDialog1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lblAlert)
+                .addContainerGap(177, Short.MAX_VALUE))
+        );
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+
+        lblBookTitle.setFont(new java.awt.Font("Ownglyph PDH", 1, 30)); // NOI18N
+        lblBookTitle.setText("모순");
+
+        lblAuthor.setFont(new java.awt.Font("Ownglyph PDH", 1, 20)); // NOI18N
+        lblAuthor.setForeground(new java.awt.Color(160, 160, 160));
+        lblAuthor.setText("양귀자");
+
+        lblStatus.setFont(new java.awt.Font("Ownglyph PDH", 1, 20)); // NOI18N
+        lblStatus.setText("상태");
+
+        lblReadDate.setFont(new java.awt.Font("Ownglyph PDH", 1, 20)); // NOI18N
+        lblReadDate.setText("날짜");
+
+        lblReview.setFont(new java.awt.Font("Ownglyph PDH", 1, 20)); // NOI18N
+        lblReview.setText("문장 수집");
+
+        lblStar.setFont(new java.awt.Font("Ownglyph PDH", 1, 20)); // NOI18N
+        lblStar.setText("별점");
+
+        lblStatus5.setFont(new java.awt.Font("Ownglyph PDH", 1, 15)); // NOI18N
+        lblStatus5.setText("읽는중");
+
+        lblStatus6.setFont(new java.awt.Font("Ownglyph PDH", 1, 15)); // NOI18N
+        lblStatus6.setText("완독");
+
+        lblStatus7.setFont(new java.awt.Font("Ownglyph PDH", 1, 15)); // NOI18N
+        lblStatus7.setText("읽기 전");
+
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Symbol - Min.png"))); // NOI18N
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/Symbol - Max.png"))); // NOI18N
+
+        txtReadStart.setFont(new java.awt.Font("Ownglyph PDH", 0, 16)); // NOI18N
+        txtReadStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtReadStartActionPerformed(evt);
+            }
+        });
+
+        txtReadEnd.setFont(new java.awt.Font("Ownglyph PDH", 0, 16)); // NOI18N
+        txtReadEnd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtReadEndActionPerformed(evt);
+            }
+        });
+
+        jLabel3.setFont(new java.awt.Font("Ownglyph PDH", 0, 20)); // NOI18N
+        jLabel3.setText("~");
+
+        txtReviews.setFont(new java.awt.Font("Ownglyph PDH", 0, 16)); // NOI18N
+        txtReviews.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtReviewsActionPerformed(evt);
+            }
+        });
+
+        lblStar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/star.png"))); // NOI18N
+
+        lblStar2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/star.png"))); // NOI18N
+
+        lblStar3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/star.png"))); // NOI18N
+
+        lblStar4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/star_filled.png"))); // NOI18N
+
+        lblStar5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/star.png"))); // NOI18N
+
+        btnSave.setBackground(new java.awt.Color(0, 0, 0));
+        btnSave.setForeground(new java.awt.Color(255, 255, 255));
+        btnSave.setText("저장");
+        btnSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveActionPerformed(evt);
+            }
+        });
+
+        lblType.setFont(new java.awt.Font("Ownglyph PDH", 1, 20)); // NOI18N
+        lblType.setForeground(new java.awt.Color(160, 160, 160));
+        lblType.setText("소설");
+
+        jList1.setFont(new java.awt.Font("Ownglyph PDH", 0, 16)); // NOI18N
+        jScrollPane1.setViewportView(jList1);
+
+        btnMakeReview.setBackground(new java.awt.Color(0, 0, 0));
+        btnMakeReview.setForeground(new java.awt.Color(255, 255, 255));
+        btnMakeReview.setText("추가");
+        btnMakeReview.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnMakeReviewActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("맑은 고딕", 0, 20)); // NOI18N
+        jLabel4.setText("|");
+
+        txtPage.setFont(new java.awt.Font("Ownglyph PDH", 0, 13)); // NOI18N
+
+        jLabel5.setText("페이지");
+
+        lblReview1.setFont(new java.awt.Font("Ownglyph PDH", 1, 20)); // NOI18N
+        lblReview1.setText("한줄평");
+
+        txtReview.setFont(new java.awt.Font("Ownglyph PDH", 0, 16)); // NOI18N
+
+        btnDeleteReview.setBackground(new java.awt.Color(153, 153, 153));
+        btnDeleteReview.setForeground(new java.awt.Color(255, 255, 255));
+        btnDeleteReview.setText("삭제");
+        btnDeleteReview.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteReviewActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap(75, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(txtReview)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(lblStar)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(lblStar1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(lblStar2)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(lblStar3)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(lblStar4)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(lblStar5))
+                        .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addComponent(lblAuthor)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(jLabel4)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(lblType))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(txtPage, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(btnMakeReview)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnDeleteReview))
+                            .addComponent(txtReadStart, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(lblReview1, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblReview, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblStatus, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblBookTitle, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblReadDate, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(status_Slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jLabel2))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addComponent(lblStatus7)
+                                                .addGap(53, 53, 53)
+                                                .addComponent(lblStatus5)
+                                                .addGap(70, 70, 70))
+                                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                                .addComponent(jLabel3)
+                                                .addGap(28, 28, 28)))
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txtReadEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(lblStatus6)))))
+                            .addComponent(txtReviews, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnSave, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))))
+                .addContainerGap(71, Short.MAX_VALUE))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(23, 23, 23)
+                .addComponent(lblBookTitle)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblType)
+                    .addComponent(lblAuthor)
+                    .addComponent(jLabel4))
+                .addGap(26, 26, 26)
+                .addComponent(lblStatus)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel2)
+                        .addComponent(status_Slider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblStatus5)
+                    .addComponent(lblStatus6)
+                    .addComponent(lblStatus7))
+                .addGap(28, 28, 28)
+                .addComponent(lblReadDate)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtReadStart, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtReadEnd, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblReview1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(txtReview, javax.swing.GroupLayout.DEFAULT_SIZE, 47, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(lblStar)
+                    .addComponent(lblStar2)
+                    .addComponent(lblStar1)
+                    .addComponent(lblStar3)
+                    .addComponent(lblStar4)
+                    .addComponent(lblStar5))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(lblReview)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(txtReviews, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtPage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel5)
+                    .addComponent(btnMakeReview)
+                    .addComponent(btnDeleteReview))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(btnSave, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(17, 17, 17))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void txtReadStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtReadStartActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtReadStartActionPerformed
+
+    private void txtReadEndActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtReadEndActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtReadEndActionPerformed
+
+    private void txtReviewsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtReviewsActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtReviewsActionPerformed
+
+    private void btnMakeReviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMakeReviewActionPerformed
+        String sentence_text = txtReviews.getText().trim();
+        String page_num = txtPage.getText().trim();
+        
+        // 유효성 검사
+        if (sentence_text.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "내용을 입력해주세요!");
+            return;
+        }
+        if (page_num.isEmpty()) {
+            javax.swing.JOptionPane.showMessageDialog(this, "페이지를 입력해주세요!");
+            return;
+        }
+
+        try {
+            // 모델 가져오기 
+            DefaultListModel<String> model = (DefaultListModel<String>) jList1.getModel();
+
+            // 리스트에 추가
+            String str = " (p." + page_num + ") ";
+            str += sentence_text;
+            model.addElement(str); 
+
+            txtReviews.setText("");
+            txtPage.setText("");
+
+        } catch (ClassCastException e) {
+            System.out.println("오류: jList1의 모델이 DefaultListModel이 아닙니다.");
+        }
+    }//GEN-LAST:event_btnMakeReviewActionPerformed
+
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveActionPerformed
+        
+        try {
+            DB db = new DB();
+            db.dbOpen();
+
+            // memory_id 찾기 
+            String getMemIdSQL = "SELECT memory_id FROM book_memories WHERE book_id = " + bookid;
+            db.dbRs = db.dbStmt.executeQuery(getMemIdSQL);
+            
+            long memoryId = -1;
+            if (db.dbRs.next()) {
+                memoryId = db.dbRs.getLong("memory_id");
+            }
+            db.dbRs.close(); 
+
+            if (memoryId == -1) {
+                javax.swing.JOptionPane.showMessageDialog(this, "저장할 독서 기록을 찾을 수 없습니다.");
+                db.dbClose();
+                return;
+            }
+
+            // book_memories 테이블 업데이트
+            int status = status_Slider.getValue();
+            String start = txtReadStart.getText().trim();
+            String review = txtReview.getText().trim();
+            String end = txtReadEnd.getText().trim();
+            
+            // 날짜가 비어있으면 SQL에 NULL로, 아니면 '날짜' 형태로 넣기
+            String startVal = start.isEmpty() ? "NULL" : "'" + start + "'";
+            String endVal = end.isEmpty() ? "NULL" : "'" + end + "'";
+            String reviewVal = review.replace("'", "''");
+
+            String updateMemSQL = String.format(
+                "UPDATE book_memories SET reading_status=%d, start_date=%s, end_date=%s, rating=%d, one_line_review='%s' WHERE memory_id=%d",
+                status, startVal, endVal, currentRating, reviewVal, memoryId
+            );
+            db.dbStmt.executeUpdate(updateMemSQL);
+
+            // 기존 정보 삭제
+            String deleteQuoteSQL = "DELETE FROM book_quotes WHERE memory_id = " + memoryId;
+            db.dbStmt.executeUpdate(deleteQuoteSQL);
+
+            // 리스트에서 문구 가져오기
+            DefaultListModel<String> model = (DefaultListModel<String>) jList1.getModel();
+            for (int i = 0; i < model.getSize(); i++) {
+                String rawText = model.getElementAt(i); 
+                // 포맷: " (p.123) 감명깊은 문구"
+                
+                // 파싱 로직
+                int splitIndex = rawText.indexOf(") "); 
+                if (splitIndex != -1) {
+                    // " (p." 가 4글자이므로 index 4부터 분기점까지가 페이지 번호
+                    String pageNum = rawText.substring(4, splitIndex); 
+                    // ") " 가 2글자이므로 분기점 + 2 부터 끝까지가 문장
+                    String sentence = rawText.substring(splitIndex + 2);
+
+                    String insertQuoteSQL = String.format(
+                        "INSERT INTO book_quotes (memory_id, page_number, sentence_text) VALUES (%d, %s, '%s')",
+                        memoryId, pageNum, sentence
+                    );
+                    db.dbStmt.executeUpdate(insertQuoteSQL);
+                }
+            }
+
+            javax.swing.JOptionPane.showMessageDialog(this, "성공적으로 저장되었습니다!");
+            db.dbClose();
+            dispose();
+
+        } catch (Exception e) {
+            System.out.println("Save Error : " + e.getMessage());
+            e.printStackTrace();
+            javax.swing.JOptionPane.showMessageDialog(this, "저장 중 오류가 발생했습니다.");
+        }
+    }//GEN-LAST:event_btnSaveActionPerformed
+
+    private void btnDeleteReviewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteReviewActionPerformed
+        int index = jList1.getSelectedIndex();
+        if (index == -1) {
+            javax.swing.JOptionPane.showMessageDialog(this, "삭제할 문장을 선택해주세요.");
+            return;
+        }
+
+        DefaultListModel<String> model = (DefaultListModel<String>) jList1.getModel();
+
+        int result = javax.swing.JOptionPane.showConfirmDialog(
+            this,
+            "선택한 문장을 삭제하시겠습니까?",
+            "확인",
+            javax.swing.JOptionPane.YES_NO_OPTION
+        );
+
+        if (result == javax.swing.JOptionPane.YES_OPTION) {
+            model.remove(index);
+        }
+    }//GEN-LAST:event_btnDeleteReviewActionPerformed
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+            logger.log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(() -> new BookClick().setVisible(true));
+    }
+    
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnDeleteReview;
+    private javax.swing.JButton btnMakeReview;
+    private javax.swing.JButton btnSave;
+    private javax.swing.JDialog jDialog1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JList<String> jList1;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel lblAlert;
+    private javax.swing.JLabel lblAuthor;
+    private javax.swing.JLabel lblBookTitle;
+    private javax.swing.JLabel lblReadDate;
+    private javax.swing.JLabel lblReview;
+    private javax.swing.JLabel lblReview1;
+    private javax.swing.JLabel lblStar;
+    private javax.swing.JLabel lblStar1;
+    private javax.swing.JLabel lblStar2;
+    private javax.swing.JLabel lblStar3;
+    private javax.swing.JLabel lblStar4;
+    private javax.swing.JLabel lblStar5;
+    private javax.swing.JLabel lblStatus;
+    private javax.swing.JLabel lblStatus5;
+    private javax.swing.JLabel lblStatus6;
+    private javax.swing.JLabel lblStatus7;
+    private javax.swing.JLabel lblType;
+    private javax.swing.JSlider status_Slider;
+    private javax.swing.JTextField txtPage;
+    private javax.swing.JTextField txtReadEnd;
+    private javax.swing.JTextField txtReadStart;
+    private javax.swing.JTextField txtReview;
+    private javax.swing.JTextField txtReviews;
+    // End of variables declaration//GEN-END:variables
+}
